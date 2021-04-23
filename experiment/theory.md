@@ -1,12 +1,10 @@
-Given samples of a class, x<sub>1</sub>, x<sub>2</sub>, ... x<sub>n</sub>, each being an d-dimensional vector, we define the mean, , ¦Ì, and the covariance matrix, ¦² are defined as:
+Given samples of a class, x<sub>1</sub>, x<sub>2</sub>, ... x<sub>n</sub>, each being an d-dimensional vector, we define the mean, Î¼, and the covariance matrix, Î£ are defined as:
 
-<img src="images/eqnmu.png"">
+<img src="images/eqnmu.png">
+                            
+**Properties of Î¼ and Î£**
 
-**Properties of ¦Ì and ¦²**
-
-  - Note that xis are d-dimensional column vectors, and hence the mean, ¦Ì, is also a d-dimensional column vector. The covariance matrix, ¦², is a dxd symmetric square matrix.
-  
-  - The mean, ¦Ì is the centroid of the samples in the feature space.
-  
-  - The covariance matrix, ¦² is a positive semi-definite matrix.
+  - Note that xis are d-dimensional column vectors, and hence the mean, Î¼, is also a d-dimensional column vector. The covariance matrix, Î£, is a dxd symmetric square matrix.
+  - The mean, Î¼ is the centroid of the samples in the feature space.
+  - The covariance matrix, Î£ is a positive semi-definite matrix.
 
