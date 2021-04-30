@@ -1,6 +1,8 @@
 Given samples of a class, x<sub>1</sub>, x<sub>2</sub>, ... x<sub>n</sub>, each being an d-dimensional vector, we define the mean, μ, and the covariance matrix, Σ are defined as:
 
 <img src="images/eqnmu.png">
+
+                            
                             
 **Properties of μ and Σ**
 
