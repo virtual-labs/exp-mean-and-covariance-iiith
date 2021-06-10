@@ -26,6 +26,13 @@
       "label": "Procedure",
       "unit-type": "task",
       "content-type": "text"
+    },    
+    {
+      "target": "pretest.html",
+      "source": "pretest.json",
+      "label": "Pretest",
+      "unit-type": "task",
+      "content-type": "text"
     },
     {
       "target": "simulation.html",
@@ -35,11 +42,11 @@
       "content-type": "simulation"
     },
     {
-      "target": "pretest.html",
-      "source": "pretest.json",
-      "label": "Pretest",
+      "target": "assignment.html",
+      "source": "assignment.md",
+      "label": "Assignment",
       "unit-type": "task",
-      "content-type": "simulation"
+      "content-type": "text"
     },
     {
       "target": "references.html",

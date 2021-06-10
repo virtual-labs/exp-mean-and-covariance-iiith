@@ -1,65 +1,54 @@
 [{
-		"question": "1. Calculate the mean of the following data. 0.9501, 0.2311, 0.6068, 0.4860, 0.8913, 0.7621, 0.4565, 0.0185, 0.8214, 0.4447 ",
-		"answers": {
-			"a": "0.5669",
-			"b": "0.6669",
-			"c": "0.4669 ",
-			"d": "0.5649"
-		},
-		"correctAnswer": "a"
-	},
+    "question": "1. Calculate the mean of the following data. 0.9501, 0.2311, 0.6068, 0.4860, 0.8913, 0.7621, 0.4565, 0.0185, 0.8214, 0.4447 ",
+    "answers": {
+	"a": "0.5669",
+	"b": "0.6669",
+	"c": "0.4669 ",
+	"d": "0.5649"
+    },
+    "correctAnswer": "a"
+},
+{
+    "question": "2. What is the variance of the above data?",
+    "answers": {
+	"a": "0.8930",
+	"b": "0.0983",
+	"c": "0.0893",
+	"d": "0.7813"
+    },
+    "correctAnswer": "a"
+}, 
+{
+    "question": "3. calculate the mean of the X <img src='images/mvar2.gif'>",
+    "answers": {
+	"a": "[4.10 2.08 0.604]",
+	"b": "[4.10 0.604 2.08]",
+	"c": "[2.08 0.604 4.10]",
+	"d": "[20.5 10.4 3.02] "
+    },
+    "correctAnswer": "a"
+},
+{
+    "question": "4. Which best describes how the data in Scatter Diagram #2 differ from the data in following Scatter Diagram <img src='images/question6.png'> <img src='images/mvar2.gif'>",
+    "answers": {
+	"a": "The mean of y2 is smaller than the mean of y1 ",
+	"b": "The range of x2 is smaller than the range of x1 ",
+	"c": "The variance of y2 is smaller than the variance of y1 ",
+	"d": "The variables y2 and x2 have a stronger horizontal relationship than y1 and x1",
+	"e": "Don't know "
+    },
+    "correctAnswer": "c"
+},
+{
+    "question": "5. Suppose that within a very large corporation salaries are positively skewed with a mean of $40,000 and a standard deviation of $20,000. Which statement is true for a sample of workers?",
+    "answers": {
+	"a": "At least 68.3 percent of workers have a salary between $20,000 and $60,000",
+	"b": "At least 75.0 percent of workers have a salary between $20,000 and $60,000 ",
+	"c": "At least 88.9 percent of workers have a salary below $100,000",
+	"d": "At least 95.4 percent of workers have a salary below $100,000",
+	"e": "Don't know"
+    },
+    "correctAnswer": "e"
+}
 
-	{
-		"question": "2. What is the variance of the above data?",
-		"answers": {
-			"a": "0.8930",
-			"b": "0.0983",
-			"c": "0.0893",
-			"d": "0.7813"
-		},
-		"correctAnswer": "a"
-	},
-
-	{
-		"question": "3. calculate the mean of the X <img src='images/mvar2.gif'>",
-		"answers": {
-			"a": "[4.10 2.08 0.604]",
-			"b": "[4.10 0.604 2.08]",
-			"c": "[2.08 0.604 4.10]",
-			"d": "[20.5 10.4 3.02] "
-		},
-		"correctAnswer": "a"
-	},
-
-	{
-		"question": "4. Which best describes how the data in Scatter Diagram #2 differ from the data in following Scatter Diagram <img src='images/question6.png'> <img src='images/mvar2.gif'>",
-		"answers": {
-			"a": "The mean of y2 is smaller than the mean of y1 ",
-			"b": "The range of x2 is smaller than the range of x1 ",
-			"c": "The variance of y2 is smaller than the variance of y1 ",
-			"d": "The variables y2 and x2 have a stronger horizontal relationship than y1 and x1",
-			"e": "Don't know "
-		},
-		"correctAnswer": "c"
-	},
-
-	{
-		"question": "5. Suppose that within a very large corporation salaries are positively skewed with a mean of $40,000 and a standard deviation of $20,000. Which statement is true for a sample of workers?",
-		"answers": {
-			"a": "At least 68.3 percent of workers have a salary between $20,000 and $60,000",
-			"b": "At least 75.0 percent of workers have a salary between $20,000 and $60,000 ",
-			"c": "At least 88.9 percent of workers have a salary below $100,000",
-			"d": "At least 95.4 percent of workers have a salary below $100,000",
-			"e": "Don't know"
-		},
-		"correctAnswer": "e"
-	},
-
-	{
-		"question": "6. What is the variance?"
-	},
-
-	{
-		"question": "A set of values, xi, has. <img src='images/quiz30x.png'> and <img src='images/quiz31x.png'> What are the sample mean, x, and sample variance, s<sup>2</sup> ? "
-	}
 ]
