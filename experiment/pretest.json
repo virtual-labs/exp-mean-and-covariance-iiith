@@ -19,7 +19,7 @@
     "correctAnswer": "a"
 }, 
 {
-    "question": "3. calculate the mean of the X <img src='images/mvar2.gif'>",
+    "question": "3. calculate the mean of the X <img src='images/mvar2.gif' weight='200' height='200'>",
     "answers": {
 	"a": "[4.10 2.08 0.604]",
 	"b": "[4.10 0.604 2.08]",
