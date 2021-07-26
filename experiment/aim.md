@@ -1,1 +1,3 @@
-### Aim of the experiment
+The locations at which the samples of a class can appear in the feature space can be statistically modeled using a distribution or density function. There are different properties of the density function that allows us to gain an understanding of the class under consideration. The most popular metrics are the mean and variance (or covariance matrix). In the case of normal densities, these two parameters completely characterize the density itself, and hence are denoted as the parameters of the density: N(mean,cov).
+
+In this experiment, we will try to gain an understanding of these metrics. Specifically, we need to understand the effect of these parameters on the shape of the data distribution under various assumptions of densities. This will allow us to visualize the nature of distribution, given the mean vector and the covariance matrix.
