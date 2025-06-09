@@ -1,22 +1,22 @@
-The pane on the right allows you to specify the mean and covariance matrices for a set of samples in 2-dimensions.
+# Setting the Distribution Parameters
+You can control the parameters of the mean vector and the covariance matrix using sliders.
+- Mean X (μ₁): Controls the center of the distribution along the X-axis.
+- Mean Y (μ₂): Controls the center along the Y-axis.
+- Variance X (σ₁²): Controls the spread of the distribution along X.
+- Variance Y (σ₂²): Controls the spread along Y.
+- Covariance (σ₁₂): Controls the tilt or orientation of the ellipse (how X and Y move together).
+-  Use the sliders and observe values updating in real-time next to the labels
 
-**Stage 1:**
+# Generating and Resetting Data
+- Click “Generate Data” to sample a new distribution with the current parameters.
+- Click “Reset” to return all sliders and settings to default.
 
-  1. Set the default parameters and click the generate button; Observe the dataset for multiple instances of samples.
+# Enhancing the Visualization
+- Show Principal Axes: Displays eigenvectors over the ellipse.
+- Show Density Contours: Adds contour lines showing density levels.
 
-  2. Click the estimate button to compute the mean and covariance of the generated samples; Observe the mismatch between the two. Repeat the process for multiple sets of samples generated from the same distribution and observe the variations in the estimate.
+# Point Interaction:
+Enable “Point Dragging” to interactively move sample points and see how it affects distribution.
 
-**Stage 2:**
-
-  1. Repeat the above procedure for the different values for the number of generated samples.
-
-  2. Plot a graph between the average error, and number of samples.
-  
-  3. Note down your inferences regarding the graph.
-
-**Stage 3:**
-
-  1. Generate your own dataset by clicking on the plot area. Note that the distribution need not be similar to a normal density.
-  2. Estimate the mean and covarance matrices.
-
-  3. Note down your inferences regarding the error committed if you assume the distribution to be normal.
+# Using Presets
+Click any of the preset buttons to auto-load commonly used parameter settings:
