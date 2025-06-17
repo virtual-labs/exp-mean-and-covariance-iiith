@@ -1,4 +1,4 @@
-# Setting the Distribution Parameters
+### Setting the Distribution Parameters
 You can control the parameters of the mean vector and the covariance matrix using sliders.
 - Mean X (μ₁): Controls the center of the distribution along the X-axis.
 - Mean Y (μ₂): Controls the center along the Y-axis.
@@ -7,16 +7,16 @@ You can control the parameters of the mean vector and the covariance matrix usin
 - Covariance (σ₁₂): Controls the tilt or orientation of the ellipse (how X and Y move together).
 -  Use the sliders and observe values updating in real-time next to the labels
 
-# Generating and Resetting Data
+### Generating and Resetting Data
 - Click “Generate Data” to sample a new distribution with the current parameters.
 - Click “Reset” to return all sliders and settings to default.
 
-# Enhancing the Visualization
+#### Enhancing the Visualization
 - Show Principal Axes: Displays eigenvectors over the ellipse.
 - Show Density Contours: Adds contour lines showing density levels.
 
-# Point Interaction:
+#### Point Interaction:
 Enable “Point Dragging” to interactively move sample points and see how it affects distribution.
 
-# Using Presets
-Click any of the preset buttons to auto-load commonly used parameter settings:
+### Using Presets
+Click any of the preset buttons to auto-load commonly used parameter settings
