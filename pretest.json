@@ -1,0 +1,94 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "1. Calculate the mean of the following data. 0.9501, 0.2311, 0.6068, 0.4860, 0.8913, 0.7621, 0.4565, 0.0185, 0.8214, 0.4447",
+      "answers": {
+        "a": "0.5669",
+        "b": "0.6669",
+        "c": "0.4669",
+        "d": "0.5649"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. The mean is calculated by summing all values (5.669) and dividing by the number of values (10), which gives 0.5669.",
+        "b": "This value is too high, suggesting an error in calculation or rounding.",
+        "c": "This value is too low, suggesting an error in calculation or rounding.",
+        "d": "This value is close but incorrect, likely due to a rounding error."
+      },
+      "difficulty": "beginner"
+    },
+    {
+      "question": "2. What is the variance of the above data?",
+      "answers": {
+        "a": "0.8930",
+        "b": "0.0983",
+        "c": "0.0893",
+        "d": "0.7813"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. The variance is calculated by finding the average of squared differences from the mean (0.5669).",
+        "b": "This value is too low, suggesting an error in the variance calculation.",
+        "c": "This value is too low, suggesting an error in the variance calculation.",
+        "d": "This value is close but incorrect, likely due to a calculation error."
+      },
+      "difficulty": "beginner"
+    },
+    {
+      "question": "3. Calculate the mean of the X <br>$\\\\$ <img src='images/mvar2.gif'>",
+      "answers": {
+        "a": "[4.10 2.08 0.604]",
+        "b": "[4.10 0.604 2.08]",
+        "c": "[2.08 0.604 4.10]",
+        "d": "[20.5 10.4 3.02]"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. The mean vector is calculated by taking the average of each column in the data matrix X.",
+        "b": "The order of elements is incorrect. The mean vector should maintain the same order as the columns in the data matrix.",
+        "c": "The order of elements is incorrect. The mean vector should maintain the same order as the columns in the data matrix.",
+        "d": "These values are too large, suggesting a multiplication error in the calculation."
+      },
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "4. Which best describes how the data in Scatter Diagram #2 differ from the data in following Scatter Diagram <br>$\\\\$ <img src='images/question6.png'> <br>$\\\\$ <img src='images/mvar2.gif'>",
+      "answers": {
+        "a": "The mean of y2 is smaller than the mean of y1",
+        "b": "The range of x2 is smaller than the range of x1",
+        "c": "The variance of y2 is smaller than the variance of y1",
+        "d": "The variables y2 and x2 have a stronger horizontal relationship than y1 and x1",
+        "e": "Don't know"
+      },
+      "correctAnswer": "c",
+      "explanations": {
+        "a": "The mean values of y1 and y2 are not the primary difference between the scatter plots.",
+        "b": "The range of x values is not the main distinguishing factor between the two plots.",
+        "c": "Correct. The spread (variance) of y2 values is noticeably smaller than that of y1 values, indicating less variability.",
+        "d": "The relationship between variables is not the main difference being asked about.",
+        "e": "The difference in variance between the two plots is observable and measurable."
+      },
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "5. Suppose that within a very large corporation salaries are positively skewed with a mean of 40,000 dollars and a standard deviation of 20,000 dollars. Which statement is true for a sample of workers?",
+      "answers": {
+        "a": "At least 68.3 percent of workers have a salary between 20,000 dollars and 60,000 dollars",
+        "b": "At least 75.0 percent of workers have a salary between 20,000 dollars and 60,000 dollars",
+        "c": "At least 88.9 percent of workers have a salary below 100,000 dollars",
+        "d": "At least 95.4 percent of workers have a salary below 100,000 dollars",
+        "e": "Don't know"
+      },
+      "correctAnswer": "e",
+      "explanations": {
+        "a": "This would be true for a normal distribution, but the data is positively skewed, so we cannot make this assumption.",
+        "b": "This would be true for a normal distribution, but the data is positively skewed, so we cannot make this assumption.",
+        "c": "Without knowing the exact shape of the skewed distribution, we cannot make this claim.",
+        "d": "Without knowing the exact shape of the skewed distribution, we cannot make this claim.",
+        "e": "Correct. Since the distribution is positively skewed, we cannot make assumptions about the percentage of workers in any salary range without more information about the distribution."
+      },
+      "difficulty": "advanced"
+    }
+  ]
+}

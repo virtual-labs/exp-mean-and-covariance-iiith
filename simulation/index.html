@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mean and Covariance Simulation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2.2.3/dist/chartjs-plugin-dragdata.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+    .card {
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .btn {
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    input[type="range"] {
+      height: 0.5rem;
+      cursor: pointer;
+    }
+    .tooltip {
+      position: relative;
+    }
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      width: 200px;
+      background-color: rgba(17, 24, 39, 0.9);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      transition: opacity 0.3s;
+    }
+    /* New styles for enhanced interactivity */
+    .color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+      margin: 0 4px;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .color-dot.active {
+      transform: scale(1.2);
+      border-color: white;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    }
+    .theme-blue { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .theme-green { background: linear-gradient(135deg, #10b981, #3b82f6); }
+    .theme-orange { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .theme-pink { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+    }
+    #gaussianCanvas, #threeCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0.5rem;
+    }
+    #threeCanvas {
+      display: none;
+      background: #f9fafb;
+    }
+    .mode-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .draggable-point {
+      cursor: move !important;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-blue {
+      background-color: #e0e7ff;
+      color: #3730a3;
+    }
+    .badge-green {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .badge-purple {
+      background-color: #ede9fe;
+      color: #5b21b6;
+    }
+    .badge-red {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+    .badge-yellow {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <header class="gradient-bg text-white py-8 px-6 mb-10 shadow-lg">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="text-5xl font-bold text-center mb-4">Mean and Covariance Simulation</h1>
+      <p class="text-center text-lg opacity-90 max-w-3xl mx-auto">Interactive visualization of bivariate normal distributions</p>
+    </div>
+  </header>
+
+  <div class="max-w-5xl mx-auto px-6 pb-16 space-y-12">
+
+    <section id="simulation" class="bg-white p-8 rounded-xl shadow-lg">
+      
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-2">
+          <div class="canvas-container bg-gray-50 rounded-lg shadow-inner">
+            <canvas id="gaussianCanvas" width="600" height="400"></canvas>
+            <canvas id="threeCanvas"></canvas>
+          </div>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-lg text-indigo-800 mb-3">Distribution Parameters</h3>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Mean X (μ₁): <span id="meanXValue">7</span>
+                </label>
+                <input type="range" id="meanXSlider" min="0" max="15" value="7" step="0.1" 
+                       class="w-full accent-indigo-600" oninput="updateSliderValue('meanXSlider', 'meanXValue')">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Mean Y (μ₂): <span id="meanYValue">7</span>
+                </label>
+                <input type="range" id="meanYSlider" min="0" max="15" value="7" step="0.1" 
+                       class="w-full accent-indigo-600" oninput="updateSliderValue('meanYSlider', 'meanYValue')">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Variance X (σ₁²): <span id="varXValue">4</span>
+                </label>
+                <input type="range" id="varXSlider" min="0.5" max="10" value="4" step="0.1" 
+                       class="w-full accent-indigo-600" oninput="updateSliderValue('varXSlider', 'varXValue')">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Variance Y (σ₂²): <span id="varYValue">4</span>
+                </label>
+                <input type="range" id="varYSlider" min="0.5" max="10" value="4" step="0.1" 
+                       class="w-full accent-indigo-600" oninput="updateSliderValue('varYSlider', 'varYValue')">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Covariance (σ₁₂): <span id="covXYValue">2</span>
+                </label>
+                <input type="range" id="covXYSlider" min="-5" max="5" value="2" step="0.1" 
+                       class="w-full accent-indigo-600" oninput="updateSliderValue('covXYSlider', 'covXYValue')">
+              </div>
+              
+              <div class="flex space-x-2 pt-2">
+                <button onclick="generateGaussianData()" class="btn flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow text-sm">
+                  Generate Data
+                </button>
+                <button onclick="resetToDefault()" class="btn flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow text-sm">
+                  Reset
+                </button>
+              </div>
+              
+              <div>
+                <button onclick="generateAnimation()" class="btn w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow text-sm">
+                  Animate Changes
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-lg text-indigo-800 mb-2">Visualization Options</h3>
+            <div class="space-y-3">
+              <div class="flex items-center">
+                <input type="checkbox" id="showEigenvectors" class="w-4 h-4 accent-indigo-600" checked>
+                <label for="showEigenvectors" class="ml-2 text-sm text-gray-700">Show Principal Axes</label>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="showDensityContours" class="w-4 h-4 accent-indigo-600">
+                <label for="showDensityContours" class="ml-2 text-sm text-gray-700">Show Density Contours</label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-lg text-indigo-800 mb-2">Distribution Properties</h3>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="text-gray-700">Eigenvalue 1:</div>
+              <div class="font-medium text-indigo-700" id="eigen1">4.00</div>
+              
+              <div class="text-gray-700">Eigenvalue 2:</div>
+              <div class="font-medium text-indigo-700" id="eigen2">2.00</div>
+              
+              <div class="text-gray-700">Principal Angle:</div>
+              <div class="font-medium text-indigo-700" id="principalAngle">45.0°</div>
+              
+              <div class="text-gray-700">Correlation:</div>
+              <div class="font-medium text-indigo-700" id="correlation">0.500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-6 mt-8">
+        <div class="md:col-span-3 bg-indigo-50 p-4 rounded-lg">
+          <h3 class="font-semibold text-lg text-indigo-800 mb-3">Enhanced Interactions</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Theme Selection -->
+            <div class="p-3 bg-white rounded-lg shadow-sm">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Color Theme</label>
+              <div class="flex space-x-2">
+                <div class="color-dot theme-blue active" onclick="setColorTheme('blue')"></div>
+                <div class="color-dot theme-green" onclick="setColorTheme('green')"></div>
+                <div class="color-dot theme-orange" onclick="setColorTheme('orange')"></div>
+                <div class="color-dot theme-pink" onclick="setColorTheme('pink')"></div>
+              </div>
+            </div>
+            
+            <!-- Animation Pattern -->
+            <div class="p-3 bg-white rounded-lg shadow-sm">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Animation Pattern</label>
+              <select id="animationPattern" class="w-full bg-gray-50 border border-gray-300 rounded-md py-2 px-3 text-sm">
+                <option value="circle">Circular Motion</option>
+                <option value="oscillate">Oscillating</option>
+                <option value="spiral">Spiral</option>
+                <option value="random">Random Walk</option>
+              </select>
+            </div>
+            
+            <!-- Sample Size -->
+            <div class="p-3 bg-white rounded-lg shadow-sm">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Sample Size: <span id="sampleSizeValue">300</span>
+              </label>
+              <input type="range" id="sampleSizeSlider" min="50" max="1000" value="300" step="50" 
+                     class="w-full accent-indigo-600" oninput="updateSampleSize()">
+            </div>
+            
+            <!-- Visualization Mode Toggle -->
+            <div class="p-3 bg-white rounded-lg shadow-sm">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Visualization Mode</label>
+              <div class="flex items-center space-x-2">
+                <input type="checkbox" id="enable3D" class="w-4 h-4 accent-indigo-600" onchange="toggle3DMode()">
+                <label for="enable3D" class="text-sm text-gray-700">Enable 3D View</label>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">Toggle between 2D and 3D visualization</div>
+            </div>
+            
+            <!-- Point Interaction -->
+            <div class="p-3 bg-white rounded-lg shadow-sm">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Point Interaction</label>
+              <div class="flex items-center space-x-2">
+                <input type="checkbox" id="enableDragging" class="w-4 h-4 accent-indigo-600" onchange="togglePointDragging()">
+                <label for="enableDragging" class="text-sm text-gray-700">Enable Point Dragging</label>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">Drag points to see how they affect the distribution</div>
+            </div>
+            
+            <!-- Animation Speed -->
+            <div class="p-3 bg-white rounded-lg shadow-sm">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Animation Speed: <span id="animSpeedValue">5</span>
+              </label>
+              <input type="range" id="animSpeedSlider" min="1" max="10" value="5" step="1" 
+                     class="w-full accent-indigo-600" oninput="updateAnimationSpeed()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Canvas container for 3D visualization -->
+      <div class="canvas-container mt-6" style="display: none;" id="threeContainer">
+        <canvas id="threeCanvas"></canvas>
+        <div class="mode-toggle">
+          <button onclick="toggle3DMode()" class="bg-indigo-600 text-white rounded-md px-3 py-1 text-xs">Switch to 2D</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-2 gap-8">
+      <div class="card bg-white p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold text-indigo-700 mb-3">Presets</h2>
+        <p class="text-gray-700 mb-4">Try these example distributions:</p>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="loadPreset('circular')" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded-lg shadow text-sm">
+            Circular
+          </button>
+          <button onclick="loadPreset('elliptical')" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded-lg shadow text-sm">
+            Horizontal Ellipse
+          </button>
+          <button onclick="loadPreset('diagonal')" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded-lg shadow text-sm">
+            Diagonal (45°)
+          </button>
+          <button onclick="loadPreset('narrow')" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded-lg shadow text-sm">
+            Narrow (135°)
+          </button>
+        </div>
+      </div>
+      
+      <div class="card bg-white p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold text-indigo-700 mb-3">Assignment</h2>
+        <ol class="list-decimal pl-6 space-y-1 text-gray-700">
+          <li>Create distributions with specific shapes and orientations</li>
+          <li>Manipulate the covariance matrix to achieve a 30° orientation</li>
+          <li>Find parameters for a very narrow, elongated distribution</li>
+          <li>Document how eigenvalues relate to the shape of the ellipses</li>
+        </ol>
+      </div>
+    </section>
+  </div>
+
+  <footer class="bg-gray-800 text-white py-6 px-6 text-center">
+    <p>© 2025 Virtual Labs</p>
+  </footer>
+
+  <script>
+    // Global variables
+    let meanX = 7;
+    let meanY = 7;
+    let varX = 4;
+    let varY = 4;
+    let covXY = 2;
+    let sampleSize = 300;
+    let animSpeed = 5;
+    let dataPoints = [];
+    let currentColorTheme = 'blue';
+    let animationId = null;
+    let chart = null;
+    let is3DMode = false;
+    let scene, camera, renderer, points, pointsMaterial;
+    
+    // Initialize everything when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeChart();
+      calculateDistributionProperties();
+      generateGaussianData();
+      attachEventListeners();
+    });
+    
+    // Initialize the Chart.js visualization
+    function initializeChart() {
+      const ctx = document.getElementById('gaussianCanvas').getContext('2d');
+      
+      // Create the scatter chart
+      chart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Gaussian Distribution',
+            data: [],
+            backgroundColor: 'rgba(99, 102, 241, 0.6)',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBorderWidth: 1,
+            pointBorderColor: 'white'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom',
+              min: 0,
+              max: 15,
+              grid: {
+                color: 'rgba(200, 200, 200, 0.3)'
+              },
+              title: {
+                display: true,
+                text: 'X'
+              }
+            },
+            y: {
+              min: 0,
+              max: 15,
+              grid: {
+                color: 'rgba(200, 200, 200, 0.3)'
+              },
+              title: {
+                display: true,
+                text: 'Y'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `(${context.parsed.x.toFixed(2)}, ${context.parsed.y.toFixed(2)})`;
+                }
+              }
+            },
+            dragData: {
+              round: 1,
+              showTooltip: true,
+              onDragStart: function(e, element) {
+                // Only allow dragging if enabled
+                return document.getElementById('enableDragging').checked;
+              },
+              onDrag: function(e, datasetIndex, index, value) {
+                // Update display while dragging
+                if (index === 0) { // Mean point
+                  updateMeanFromDrag(value.x, value.y);
+                }
+              },
+              onDragEnd: function(e, datasetIndex, index, value) {
+                // Update values after drag ends
+                if (index === 0) { // Mean point
+                  updateMeanFromDrag(value.x, value.y);
+                  generateGaussianData();
+                }
+              }
+            }
+          },
+          animation: {
+            duration: 400
+          }
+        }
+      });
+    }
+    
+    // Generate random Gaussian data based on current parameters
+    function generateGaussianData() {
+      const showEigenvectors = document.getElementById('showEigenvectors').checked;
+      const showDensityContours = document.getElementById('showDensityContours').checked;
+      
+      // Calculate covariance and eigenvalues
+      const covValue = covXY;
+      const correlation = covValue / Math.sqrt(varX * varY);
+      
+      // Generate random samples using Box-Muller transform
+      dataPoints = [];
+      
+      // Add mean point as first data point (can be dragged)
+      dataPoints.push({x: meanX, y: meanY, isMean: true});
+      
+      // Generate random Gaussian samples
+      for (let i = 0; i < sampleSize; i++) {
+        // Generate standard normal random variables
+        let u1 = Math.random();
+        let u2 = Math.random();
+        let z1 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        let z2 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+        
+        // Compute Cholesky decomposition
+        const L11 = Math.sqrt(varX);
+        const L21 = covValue / L11;
+        const L22 = Math.sqrt(varY - L21 * L21);
+        
+        // Transform to correlated variables
+        const x = meanX + L11 * z1;
+        const y = meanY + L21 * z1 + L22 * z2;
+        
+        dataPoints.push({x: x, y: y});
+      }
+      
+      // Update the chart
+      updateChartData();
+      
+      // Update 3D visualization if active
+      if (is3DMode) {
+        update3DVisualization();
+      }
+    }
+    
+    // Update chart with current data points
+    function updateChartData() {
+      // Clear existing datasets
+      chart.data.datasets = [];
+      
+      // Add mean point (larger, different color)
+      chart.data.datasets.push({
+        label: 'Mean',
+        data: [{x: meanX, y: meanY}],
+        backgroundColor: 'rgba(239, 68, 68, 0.9)',
+        pointRadius: 8,
+        pointHoverRadius: 10,
+        pointStyle: 'circle',
+        pointBorderWidth: 2,
+        pointBorderColor: 'white'
+      });
+      
+      // Add data points
+      chart.data.datasets.push({
+        label: 'Data Points',
+        data: dataPoints.slice(1).map(p => ({x: p.x, y: p.y})),
+        backgroundColor: getThemeColor(0.6),
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBorderWidth: 1,
+        pointBorderColor: 'white'
+      });
+      
+      // Add ellipses if density contours are enabled
+      if (document.getElementById('showDensityContours').checked) {
+        addEllipseContours();
+      }
+      
+      // Add eigenvectors if enabled
+      if (document.getElementById('showEigenvectors').checked) {
+        addEigenvectors();
+      }
+      
+      // Update the chart
+      chart.update();
+    }
+    
+    // Add elliptical contours to the chart
+    function addEllipseContours() {
+      // Calculate eigenvalues and eigenvectors of covariance matrix
+      const [eigenvalue1, eigenvalue2, angle] = calculateEigenvalues();
+      
+      // Create contour levels
+      const contourLevels = [0.5, 1.0, 1.5, 2.0, 2.5];
+      
+      // Create datasets for each contour ellipse
+      contourLevels.forEach((level, index) => {
+        const alpha = 0.9 - index * 0.15;
+        const points = generateEllipsePoints(meanX, meanY, eigenvalue1, eigenvalue2, angle, level);
+        
+        chart.data.datasets.push({
+          label: `Contour ${level}σ`,
+          data: points,
+          showLine: true,
+          fill: false,
+          borderColor: getThemeColor(alpha),
+          pointRadius: 0,
+          borderWidth: 1.5,
+          tension: 0.4
+        });
+      });
+    }
+    
+    // Generate points along an ellipse for a contour
+    function generateEllipsePoints(centerX, centerY, eigenvalue1, eigenvalue2, angle, scale) {
+      const points = [];
+      const numPoints = 100;
+      
+      for (let i = 0; i < numPoints; i++) {
+        const t = 2 * Math.PI * i / numPoints;
+        const a = scale * Math.sqrt(eigenvalue1);
+        const b = scale * Math.sqrt(eigenvalue2);
+        
+        // Parametric equation of ellipse
+        const x0 = a * Math.cos(t);
+        const y0 = b * Math.sin(t);
+        
+        // Rotate and translate
+        const x = centerX + x0 * Math.cos(angle) - y0 * Math.sin(angle);
+        const y = centerY + x0 * Math.sin(angle) + y0 * Math.cos(angle);
+        
+        points.push({x, y});
+      }
+      
+      return points;
+    }
+    
+    // Add eigenvectors to the chart
+    function addEigenvectors() {
+      const [eigenvalue1, eigenvalue2, angle] = calculateEigenvalues();
+      
+      // Calculate eigenvector endpoints
+      const scale1 = 2 * Math.sqrt(eigenvalue1);
+      const scale2 = 2 * Math.sqrt(eigenvalue2);
+      
+      // First eigenvector (major axis)
+      const x1 = meanX + scale1 * Math.cos(angle);
+      const y1 = meanY + scale1 * Math.sin(angle);
+      const x1b = meanX - scale1 * Math.cos(angle);
+      const y1b = meanY - scale1 * Math.sin(angle);
+      
+      // Second eigenvector (minor axis)
+      const x2 = meanX + scale2 * Math.cos(angle + Math.PI/2);
+      const y2 = meanY + scale2 * Math.sin(angle + Math.PI/2);
+      const x2b = meanX - scale2 * Math.cos(angle + Math.PI/2);
+      const y2b = meanY - scale2 * Math.sin(angle + Math.PI/2);
+      
+      // Add first eigenvector
+      chart.data.datasets.push({
+        label: 'Eigenvector 1',
+        data: [{x: x1b, y: y1b}, {x: meanX, y: meanY}, {x: x1, y: y1}],
+        showLine: true,
+        borderColor: 'rgba(239, 68, 68, 0.8)',
+        pointRadius: [3, 0, 3],
+        borderWidth: 2,
+        borderDash: [5, 5]
+      });
+      
+      // Add second eigenvector
+      chart.data.datasets.push({
+        label: 'Eigenvector 2',
+        data: [{x: x2b, y: y2b}, {x: meanX, y: meanY}, {x: x2, y: y2}],
+        showLine: true,
+        borderColor: 'rgba(16, 185, 129, 0.8)',
+        pointRadius: [3, 0, 3],
+        borderWidth: 2,
+        borderDash: [5, 5]
+      });
+    }
+    
+    // Calculate eigenvalues and eigenvectors
+    function calculateEigenvalues() {
+      const covValue = covXY;
+      
+      // Eigenvalues
+      const trace = varX + varY;
+      const det = varX * varY - covValue * covValue;
+      const discriminant = Math.sqrt(trace * trace - 4 * det);
+      
+      const eigenvalue1 = (trace + discriminant) / 2;
+      const eigenvalue2 = (trace - discriminant) / 2;
+      
+      // Principal angle
+      let angle = 0;
+      if (Math.abs(covValue) > 1e-6) {
+        angle = Math.atan2(eigenvalue1 - varX, covValue);
+      }
+      
+      return [eigenvalue1, eigenvalue2, angle];
+    }
+    
+    // Calculate and display distribution properties
+    function calculateDistributionProperties() {
+      const [eigenvalue1, eigenvalue2, angle] = calculateEigenvalues();
+      const correlation = covXY / Math.sqrt(varX * varY);
+      
+      // Update display
+      document.getElementById('eigen1').textContent = eigenvalue1.toFixed(2);
+      document.getElementById('eigen2').textContent = eigenvalue2.toFixed(2);
+      document.getElementById('principalAngle').textContent = (angle * 180 / Math.PI).toFixed(1) + '°';
+      document.getElementById('correlation').textContent = correlation.toFixed(3);
+    }
+    
+    // Update slider value display
+    function updateSliderValue(sliderId, valueId) {
+      const slider = document.getElementById(sliderId);
+      const value = parseFloat(slider.value);
+      document.getElementById(valueId).textContent = value.toFixed(1);
+      
+      // Update corresponding variable
+      switch(sliderId) {
+        case 'meanXSlider':
+          meanX = value;
+          break;
+        case 'meanYSlider':
+          meanY = value;
+          break;
+        case 'varXSlider':
+          varX = value;
+          break;
+        case 'varYSlider':
+          varY = value;
+          break;
+        case 'covXYSlider':
+          covXY = value;
+          break;
+      }
+      
+      // Update properties and visualization
+      calculateDistributionProperties();
+      updateChartData();
+    }
+    
+    // Update mean values from drag interaction
+    function updateMeanFromDrag(x, y) {
+      meanX = x;
+      meanY = y;
+      
+      // Update slider values
+      document.getElementById('meanXSlider').value = meanX;
+      document.getElementById('meanYSlider').value = meanY;
+      document.getElementById('meanXValue').textContent = meanX.toFixed(1);
+      document.getElementById('meanYValue').textContent = meanY.toFixed(1);
+      
+      calculateDistributionProperties();
+    }
+    
+    // Update sample size
+    function updateSampleSize() {
+      const slider = document.getElementById('sampleSizeSlider');
+      sampleSize = parseInt(slider.value);
+      document.getElementById('sampleSizeValue').textContent = sampleSize;
+      generateGaussianData();
+    }
+    
+    // Update animation speed
+    function updateAnimationSpeed() {
+      const slider = document.getElementById('animSpeedSlider');
+      animSpeed = parseInt(slider.value);
+      document.getElementById('animSpeedValue').textContent = animSpeed;
+    }
+    
+    // Reset to default values
+    function resetToDefault() {
+      // Reset values
+      meanX = 7;
+      meanY = 7;
+      varX = 4;
+      varY = 4;
+      covXY = 2;
+      sampleSize = 300;
+      
+      // Update sliders
+      document.getElementById('meanXSlider').value = meanX;
+      document.getElementById('meanYSlider').value = meanY;
+      document.getElementById('varXSlider').value = varX;
+      document.getElementById('varYSlider').value = varY;
+      document.getElementById('covXYSlider').value = covXY;
+      document.getElementById('sampleSizeSlider').value = sampleSize;
+      
+      // Update displays
+      document.getElementById('meanXValue').textContent = meanX.toFixed(1);
+      document.getElementById('meanYValue').textContent = meanY.toFixed(1);
+      document.getElementById('varXValue').textContent = varX.toFixed(1);
+      document.getElementById('varYValue').textContent = varY.toFixed(1);
+      document.getElementById('covXYValue').textContent = covXY.toFixed(1);
+      document.getElementById('sampleSizeValue').textContent = sampleSize;
+      
+      // Stop any running animation
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      
+      // Update properties and visualization
+      calculateDistributionProperties();
+      generateGaussianData();
+    }
+    
+    // Set color theme
+    function setColorTheme(theme) {
+      currentColorTheme = theme;
+      
+      // Update header gradient
+      const header = document.querySelector('header');
+      
+      switch(theme) {
+        case 'blue':
+          header.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+          break;
+        case 'green':
+          header.style.background = 'linear-gradient(135deg, #10b981, #3b82f6)';
+          break;
+        case 'orange':
+          header.style.background = 'linear-gradient(135deg, #f59e0b, #ef4444)';
+          break;
+        case 'pink':
+          header.style.background = 'linear-gradient(135deg, #ec4899, #8b5cf6)';
+          break;
+      }
+      
+      // Update active dot
+      document.querySelectorAll('.color-dot').forEach(dot => {
+        dot.classList.remove('active');
+      });
+      document.querySelector(`.theme-${theme}`).classList.add('active');
+      
+      // Update chart
+      updateChartData();
+    }
+    
+    // Get current theme color with opacity
+    function getThemeColor(opacity = 1) {
+      switch(currentColorTheme) {
+        case 'blue':
+          return `rgba(99, 102, 241, ${opacity})`;
+        case 'green':
+          return `rgba(16, 185, 129, ${opacity})`;
+        case 'orange':
+          return `rgba(245, 158, 11, ${opacity})`;
+        case 'pink':
+          return `rgba(236, 72, 153, ${opacity})`;
+        default:
+          return `rgba(99, 102, 241, ${opacity})`;
+      }
+    }
+    
+    // Toggle point dragging functionality
+    function togglePointDragging() {
+      // Functionality handled by Chart.js dragData plugin
+      generateGaussianData();
+    }
+    
+    // Generate animation
+    function generateAnimation() {
+      // Stop any existing animation
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      
+      const pattern = document.getElementById('animationPattern').value;
+      let t = 0;
+      const speed = animSpeed / 100;
+      
+      // Animation frame function
+      function animate() {
+        t += speed;
+        
+        // Different patterns
+        switch(pattern) {
+          case 'circle':
+            meanX = 7 + 3 * Math.cos(t);
+            meanY = 7 + 3 * Math.sin(t);
+            break;
+          case 'oscillate':
+            meanX = 7 + 3 * Math.sin(t);
+            meanY = 7 + 2 * Math.sin(t * 1.5);
+            break;
+          case 'spiral':
+            const r = 4 * Math.exp(-0.05 * t) + 0.5;
+            meanX = 7 + r * Math.cos(t);
+            meanY = 7 + r * Math.sin(t);
+            if (r < 0.6) t = 0; // Reset when spiral completes
+            break;
+          case 'random':
+            meanX += (Math.random() - 0.5) * speed * 2;
+            meanY += (Math.random() - 0.5) * speed * 2;
+            // Keep within bounds
+            meanX = Math.max(1, Math.min(14, meanX));
+            meanY = Math.max(1, Math.min(14, meanY));
+            break;
+        }
+        
+        // Update sliders
+        document.getElementById('meanXSlider').value = meanX;
+        document.getElementById('meanYSlider').value = meanY;
+        document.getElementById('meanXValue').textContent = meanX.toFixed(1);
+        document.getElementById('meanYValue').textContent = meanY.toFixed(1);
+        
+        // Update visualization
+        calculateDistributionProperties();
+        generateGaussianData();
+        
+        // Continue animation
+        animationId = requestAnimationFrame(animate);
+      }
+      
+      // Start animation
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    // Toggle between 2D and 3D mode
+    function toggle3DMode() {
+      is3DMode = document.getElementById('enable3D').checked;
+      
+      if (is3DMode) {
+        // Switch to 3D view
+        document.getElementById('gaussianCanvas').style.display = 'none';
+        document.getElementById('threeCanvas').style.display = 'block';
+        initialize3D();
+        update3DVisualization();
+      } else {
+        // Switch to 2D view
+        document.getElementById('gaussianCanvas').style.display = 'block';
+        document.getElementById('threeCanvas').style.display = 'none';
+        // Update 2D chart
+        updateChartData();
+      }
+    }
+    
+    // Initialize 3D visualization
+    function initialize3D() {
+      if (!scene) {
+        // Setup scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf9fafb);
+        
+        // Setup camera
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(7, 7, 20);
+        camera.lookAt(7, 7, 0);
+        
+        // Setup renderer
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById('threeCanvas'),
+          antialias: true
+        });
+        renderer.setSize(document.getElementById('threeCanvas').parentElement.clientWidth, 
+                        document.getElementById('threeCanvas').parentElement.height);
+        
+        // Setup lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+        
+        // Add grid and axes
+        const gridHelper = new THREE.GridHelper(15, 15);
+        gridHelper.rotation.x = Math.PI / 2;
+        scene.add(gridHelper);
+        
+        // Add the actual data points
+        const pointsGeometry = new THREE.BufferGeometry();
+        const pointsMaterial = new THREE.PointsMaterial({
+          color: getThemeColor(),
+          size: 0.25
+        });
+        
+        points = new THREE.Points(pointsGeometry, pointsMaterial);
+        scene.add(points);
+        
+        // Animation loop
+        function animate() {
+          requestAnimationFrame(animate);
+          
+          // Rotate the camera slightly for better depth perception
+          const time = Date.now() * 0.0005;
+          camera.position.x = 7 + 15 * Math.sin(time);
+          camera.position.z = 7 + 15 * Math.cos(time);
+          camera.lookAt(7, 7, 0);
+          
+          renderer.render(scene, camera);
+        }
+        
+        animate();
+      }
+    }
+    
+    // Update the 3D visualization with current data
+    function update3DVisualization() {
+      if (!scene || !points) return;
+      
+      // Convert data points to 3D coordinates
+      const positions = new Float32Array(dataPoints.length * 3);
+      
+      for (let i = 0; i < dataPoints.length; i++) {
+        const point = dataPoints[i];
+        
+        // Calculate Z coordinate using bivariate normal density formula
+        const dx = point.x - meanX;
+        const dy = point.y - meanY;
+        
+        const detSigma = varX * varY - covXY * covXY;
+        const invSigma11 = varY / detSigma;
+        const invSigma12 = -covXY / detSigma;
+        const invSigma22 = varX / detSigma;
+        
+        const exponent = -0.5 * (dx * dx * invSigma11 + 2 * dx * dy * invSigma12 + dy * dy * invSigma22);
+        const z = 3 * Math.exp(exponent);
+        
+        // Set coordinates 
+        positions[i * 3] = point.x;
+        positions[i * 3 + 1] = point.y;
+        positions[i * 3 + 2] = z;
+      }
+      
+      // Update geometry
+      points.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      points.material.color.set(getThemeColor());
+      points.geometry.attributes.position.needsUpdate = true;
+    }
+    
+    // Load preset distributions
+    function loadPreset(preset) {
+      switch(preset) {
+        case 'circular':
+          meanX = 7;
+          meanY = 7;
+          varX = 4;
+          varY = 4;
+          covXY = 0;
+          break;
+        case 'elliptical':
+          meanX = 7;
+          meanY = 7;
+          varX = 8;
+          varY = 2;
+          covXY = 0;
+          break;
+        case 'diagonal':
+          meanX = 7;
+          meanY = 7;
+          varX = 6;
+          varY = 2;
+          covXY = 3;
+          break;
+        case 'narrow':
+          meanX = 7;
+          meanY = 7;
+          varX = 8;
+          varY = 1;
+          covXY = -2.5;
+          break;
+      }
+      
+      // Update sliders
+      document.getElementById('meanXSlider').value = meanX;
+      document.getElementById('meanYSlider').value = meanY;
+      document.getElementById('varXSlider').value = varX;
+      document.getElementById('varYSlider').value = varY;
+      document.getElementById('covXYSlider').value = covXY;
+      
+      // Update displays
+      document.getElementById('meanXValue').textContent = meanX.toFixed(1);
+      document.getElementById('meanYValue').textContent = meanY.toFixed(1);
+      document.getElementById('varXValue').textContent = varX.toFixed(1);
+      document.getElementById('varYValue').textContent = varY.toFixed(1);
+      document.getElementById('covXYValue').textContent = covXY.toFixed(1);
+      
+      // Update properties and visualization
+      calculateDistributionProperties();
+      generateGaussianData();
+    }
+    
+    // Attach event listeners to sliders
+    function attachEventListeners() {
+      const sliders = [
+        {id: 'meanXSlider', valueId: 'meanXValue'},
+        {id: 'meanYSlider', valueId: 'meanYValue'},
+        {id: 'varXSlider', valueId: 'varXValue'},
+        {id: 'varYSlider', valueId: 'varYValue'},
+        {id: 'covXYSlider', valueId: 'covXYValue'}
+      ];
+      
+      sliders.forEach(slider => {
+        const element = document.getElementById(slider.id);
+        if (element) {
+          element.addEventListener('input', function() {
+            updateSliderValue(slider.id, slider.valueId);
+          });
+        }
+      });
+      
+      // Add listeners for checkboxes
+      const checkboxes = ['showEigenvectors', 'showDensityContours', 'enableDragging', 'enable3D'];
+      checkboxes.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.addEventListener('change', function() {
+            if (id === 'enable3D') {
+              toggle3DMode();
+            } else {
+              updateChartData();
+            }
+          });
+        }
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        if (chart) {
+          chart.resize();
+        }
+        if (renderer && camera) {
+          renderer.setSize(document.getElementById('threeCanvas').parentElement.clientWidth, 
+                          document.getElementById('threeCanvas').parentElement.height);
+          camera.aspect = document.getElementById('threeCanvas').parentElement.clientWidth / 
+                          document.getElementById('threeCanvas').parentElement.height;
+          camera.updateProjectionMatrix();
+        }
+      });
+    }
+  </script>
+<script src="../assets/js/iframeResize.js"></script>
+        
+        </body>
+</html>
